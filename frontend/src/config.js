@@ -11,8 +11,18 @@ export const CHAIN = {
 
 // Deployed ReserveAttestation contract. Set via .env:
 //   VITE_ATTESTATION_ADDRESS=0x...
-export const ATTESTATION_ADDRESS =
-  import.meta.env.VITE_ATTESTATION_ADDRESS || "";
+// Strip BOM / whitespace and validate — a stray ﻿ (e.g. injected by a
+// shell pipe when setting the env var) makes ethers treat the address as an
+// ENS name and throw "network does not support ENS", silently blanking the
+// dashboard. Treat anything that isn't a clean 0x-address as unset.
+function cleanAddress(raw) {
+  // keep only visible ASCII — drops BOM (U+FEFF), zero-width chars, whitespace
+  const a = (raw || "").replace(/[^\x21-\x7e]/g, "");
+  return /^0x[0-9a-fA-F]{40}$/.test(a) ? a : "";
+}
+export const ATTESTATION_ADDRESS = cleanAddress(
+  import.meta.env.VITE_ATTESTATION_ADDRESS
+);
 
 // Dashboard polling interval (ms).
 export const REFRESH_INTERVAL = 15_000;
