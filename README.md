@@ -54,7 +54,11 @@ incorruptible answer to *"is the bridge solvent right now?"*
 **Testnet note:** the Grail Bridge's Litecoin-side address is not public on testnet, so
 the Litecoin observation source is configurable (`LITECOIN_BRIDGE_ADDRESS` for a real
 address via litecoinspace.org, or `LTC_LOCKED_OVERRIDE` to simulate readings for the
-demo). On mainnet, attestors would watch the actual Grail BitSNARK Taproot UTXOs.
+demo). Similarly, the LiteForge Blockscout instance does not expose the native zkLTC
+supply yet (verified: both the v2 stats and v1 ethsupply endpoints report 0), so
+`ZKLTC_SUPPLY_OVERRIDE` covers the LitVM side for the demo. On mainnet, attestors
+would watch the actual Grail BitSNARK Taproot UTXOs and derive zkLTC supply from
+bridge mint/burn events — the contract and dashboard are source-agnostic by design.
 
 ## Network
 

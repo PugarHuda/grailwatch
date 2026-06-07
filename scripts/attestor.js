@@ -27,22 +27,41 @@ const ABI = [
   "event BackingAlert(uint256 indexed id, address indexed attestor, uint256 ratioBps)",
 ];
 
-/** zkLTC native supply on LiteForge, via Blockscout stats. */
+/**
+ * zkLTC native supply on LiteForge.
+ * Tries Blockscout v2 stats, then the v1 ethsupply endpoint. The LiteForge
+ * Blockscout instance currently reports 0 / no supply for the native coin,
+ * so a ZKLTC_SUPPLY_OVERRIDE (in zkLTC) fallback is supported for the demo —
+ * on mainnet attestors would derive supply from Grail Bridge mint/burn events.
+ */
 async function getZkLtcSupplyWei() {
-  const res = await fetch(BLOCKSCOUT_STATS, { headers: { accept: "application/json" } });
-  if (!res.ok) throw new Error(`Blockscout stats ${res.status}`);
-  const stats = await res.json();
-  // Blockscout exposes the native coin supply under coin_total_supply (in coins)
-  const supplyCoins = stats.coin_total_supply ?? stats.total_supply;
-  if (supplyCoins == null) {
-    if (process.env.ZKLTC_SUPPLY_OVERRIDE) {
-      return { wei: ethers.parseEther(process.env.ZKLTC_SUPPLY_OVERRIDE), source: "override" };
+  try {
+    const res = await fetch(BLOCKSCOUT_STATS, { headers: { accept: "application/json" } });
+    if (res.ok) {
+      const stats = await res.json();
+      const supplyCoins = stats.coin_total_supply ?? stats.total_supply;
+      if (supplyCoins != null && Number(supplyCoins) > 0) {
+        return { wei: ethers.parseEther(String(supplyCoins)), source: "blockscout-v2" };
+      }
     }
-    throw new Error(
-      "Blockscout did not report native supply — set ZKLTC_SUPPLY_OVERRIDE (in zkLTC) in .env"
+    const res1 = await fetch(
+      "https://liteforge.explorer.caldera.xyz/api?module=stats&action=ethsupply"
     );
+    if (res1.ok) {
+      const data = await res1.json();
+      if (data.result && BigInt(data.result) > 0n) {
+        return { wei: BigInt(data.result), source: "blockscout-v1" };
+      }
+    }
+  } catch (err) {
+    console.warn(`Blockscout supply lookup failed (${err.message}) — trying override`);
   }
-  return { wei: ethers.parseEther(String(supplyCoins)), source: "blockscout" };
+  if (process.env.ZKLTC_SUPPLY_OVERRIDE) {
+    return { wei: ethers.parseEther(process.env.ZKLTC_SUPPLY_OVERRIDE), source: "override" };
+  }
+  throw new Error(
+    "LiteForge Blockscout does not expose native zkLTC supply — set ZKLTC_SUPPLY_OVERRIDE (in zkLTC) in .env"
+  );
 }
 
 /** LTC locked on the Litecoin side, in litoshis. */
