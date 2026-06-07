@@ -38,8 +38,12 @@ async function main() {
   const count = await contract.attestationCount();
   check("attestation history is non-empty", count > 0n, `count=${count}`);
 
-  const all = await contract.getAttestations(0, 1000);
-  check("getAttestations returns the full history", BigInt(all.length) === count);
+  // page through the full history (don't assume it fits in one read)
+  const all = [];
+  for (let offset = 0n; offset < count; offset += 500n) {
+    all.push(...(await contract.getAttestations(offset, 500)));
+  }
+  check("paged reads return the full history", BigInt(all.length) === count);
 
   const latest = await contract.latest();
   const last = all[all.length - 1];
@@ -69,11 +73,15 @@ async function main() {
   check("latest reading is fully backed", latest.ratioBps >= 10000n);
 
   // pagination spot-check, same as the dashboard's paged reads
-  const page = await contract.getAttestations(1, 2);
-  check(
-    "pagination window returns the right slice",
-    page.length === 2 && page[0].timestamp === all[1].timestamp
-  );
+  if (count >= 3n) {
+    const page = await contract.getAttestations(1, 2);
+    check(
+      "pagination window returns the right slice",
+      page.length === 2 && page[0].timestamp === all[1].timestamp
+    );
+  } else {
+    console.log("SKIP  pagination spot-check (needs >= 3 attestations)");
+  }
 
   console.log(`\n${failures === 0 ? "ALL CHECKS PASSED" : failures + " CHECK(S) FAILED"}`);
   process.exit(failures === 0 ? 0 : 1);

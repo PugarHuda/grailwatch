@@ -1,0 +1,13 @@
+{
+  "crons": [
+    {
+      "path": "/api/attest",
+      "schedule": "0 0 * * *"
+    }
+  ],
+  "functions": {
+    "api/attest.js": {
+      "maxDuration": 60
+    }
+  }
+}

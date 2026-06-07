@@ -4,3 +4,5 @@ cache/
 artifacts/
 coverage/
 typechain-types/
+
+.cron_secret

@@ -39,9 +39,12 @@ async function getZkLtcSupplyWei() {
     const res = await fetch(BLOCKSCOUT_STATS, { headers: { accept: "application/json" } });
     if (res.ok) {
       const stats = await res.json();
-      const supplyCoins = stats.coin_total_supply ?? stats.total_supply;
-      if (supplyCoins != null && Number(supplyCoins) > 0) {
-        return { wei: ethers.parseEther(String(supplyCoins)), source: "blockscout-v2" };
+      // coin_total_supply is denominated in whole coins; total_supply is in wei
+      if (stats.coin_total_supply != null && Number(stats.coin_total_supply) > 0) {
+        return { wei: ethers.parseEther(String(stats.coin_total_supply)), source: "blockscout-v2" };
+      }
+      if (stats.total_supply != null && BigInt(stats.total_supply) > 0n) {
+        return { wei: BigInt(stats.total_supply), source: "blockscout-v2" };
       }
     }
     const res1 = await fetch(
@@ -71,9 +74,9 @@ async function getLtcLockedSats() {
     const res = await fetch(`${LITECOINSPACE_API}/${addr}`);
     if (!res.ok) throw new Error(`litecoinspace ${res.status}`);
     const data = await res.json();
-    const sats = BigInt(
-      data.chain_stats.funded_txo_sum - data.chain_stats.spent_txo_sum
-    );
+    // BigInt subtraction — float math loses precision past 2^53 litoshis
+    const sats =
+      BigInt(data.chain_stats.funded_txo_sum) - BigInt(data.chain_stats.spent_txo_sum);
     return { sats, ref: `litecoinspace:${addr}` };
   }
   if (process.env.LTC_LOCKED_OVERRIDE) {
@@ -113,9 +116,14 @@ async function main() {
   console.log(`🛡️  GrailWatch attestor online — ${wallet.address}\n`);
 
   const intervalSec = Number(process.argv[2] ?? 0);
-  if (intervalSec > 0) {
+  if (Number.isFinite(intervalSec) && intervalSec > 0) {
+    // daemon mode: one bad tick (API rate limit, RPC hiccup) must not kill the observer
     for (;;) {
-      await attestOnce(contract);
+      try {
+        await attestOnce(contract);
+      } catch (err) {
+        console.error(`⚠️  Attestation tick failed: ${err.message?.slice(0, 140)} — retrying next interval`);
+      }
       await new Promise((r) => setTimeout(r, intervalSec * 1000));
     }
   } else {

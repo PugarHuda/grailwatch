@@ -26,7 +26,10 @@ export function formatAmount(value, maxDecimals = 4) {
 
 /** ratioBps (BigInt or number) -> "100.00" style percent string. */
 export function formatRatio(ratioBps) {
-  return (Number(ratioBps) / 100).toFixed(2);
+  const pct = Number(ratioBps) / 100;
+  // absurd over-collateralization (e.g. dust supply) — clamp instead of "1e+20"
+  if (pct > 999_999.99) return ">999,999.99";
+  return pct.toFixed(2);
 }
 
 export function shortAddress(addr) {
