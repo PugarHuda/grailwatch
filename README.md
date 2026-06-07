@@ -84,5 +84,6 @@ node scripts/attestor.js 60               # attest every 60s
 
 ## Demo
 
+🌐 Live dashboard: **https://grailwatch-mauve.vercel.app**
+📦 GitHub: **https://github.com/PugarHuda/grailwatch**
 🎥 Demo video: `<X_VIDEO_LINK>`
-🌐 Live dashboard: `<LIVE_APP_LINK>`

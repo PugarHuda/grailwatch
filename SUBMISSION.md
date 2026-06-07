@@ -10,9 +10,9 @@
 
 **Description:** GrailWatch is the proof-of-reserves layer for zkLTC — attestor bots observe both Litecoin and LitVM, post backing-ratio attestations on-chain, and fire a subscribable BackingAlert the moment 1 zkLTC ≠ 1 LTC, turning "trust us, it's backed" into a public, permanent audit trail.
 
-**Live app:** `<LIVE_APP_LINK>`
+**Live app:** https://grailwatch-mauve.vercel.app
 
-**GitHub:** `<GITHUB_REPO_LINK>`
+**GitHub:** https://github.com/PugarHuda/grailwatch
 
 **Demo video:** `<X_VIDEO_LINK>`
 
