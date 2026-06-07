@@ -68,7 +68,7 @@ bridge mint/burn events — the contract and dashboard are source-agnostic by de
 | RPC | `https://liteforge.rpc.caldera.xyz/http` |
 | Explorer | `https://liteforge.explorer.caldera.xyz` |
 | Faucet | `https://liteforge.hub.caldera.xyz` |
-| Contract | `<DEPLOYED_ADDRESS>` |
+| Contract | [`0x5e6b9242Db15959EdCEccBa5C369fca3576fd598`](https://liteforge.explorer.caldera.xyz/address/0x5e6b9242Db15959EdCEccBa5C369fca3576fd598) |
 
 ## Quickstart
 
