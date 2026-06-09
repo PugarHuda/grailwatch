@@ -6,3 +6,4 @@ coverage/
 typechain-types/
 
 .cron_secret
+scripts/.seed-attestors-v2.json

@@ -52,14 +52,15 @@ function Nav({ live, route }) {
   );
 }
 
-function AlertBanner({ latest }) {
+function AlertBanner({ latest, health }) {
+  const pct = formatRatio(health?.valid ? health.medianBps : latest.ratioBps);
   return (
     <div className="alert-banner" role="alert">
       <span className="alert-banner-icon">🚨</span>
       <div>
-        <strong>BackingAlert:</strong> zkLTC is only{" "}
-        <strong>{formatRatio(latest.ratioBps)}%</strong> backed. A{" "}
-        <code>BackingAlert</code> event has fired on-chain.
+        <strong>BackingAlert:</strong> the quorum median is only{" "}
+        <strong>{pct}%</strong> backed. A <code>BackingAlert</code> event has
+        fired on-chain.
       </div>
     </div>
   );
@@ -94,8 +95,10 @@ function Footer() {
   );
 }
 
-function Landing({ latest }) {
-  const fullyBacked = latest && latest.ratioBps >= BigInt(FULL_BACKING_BPS);
+function Landing({ latest, health }) {
+  const valid = health?.valid ?? true;
+  const fullyBacked = health ? health.valid && health.fullyBacked : latest && latest.ratioBps >= BigInt(FULL_BACKING_BPS);
+  const ratioBps = health?.valid ? health.medianBps : latest?.ratioBps;
   return (
     <main className="main landing">
       <section className="lp-hero">
@@ -103,10 +106,11 @@ function Landing({ latest }) {
           <span className="lp-eyebrow">🛡️ Live on {CHAIN.name} · Chain {CHAIN.id}</span>
           <h1>Hard money is only hard if it's <span className="hi">verifiable</span>.</h1>
           <p>
-            GrailWatch is the proof-of-reserves layer for zkLTC. Attestors observe
-            both chains and post the backing ratio on-chain — turning “trust us,
-            it's backed” into a public, permanent, independently-verifiable audit
-            trail. Every number here is real and you can check it yourself.
+            GrailWatch is the proof-of-reserves layer for zkLTC. A <strong>quorum
+            of independent attestors</strong> observes both chains and posts the
+            backing ratio on-chain; health is the <strong>median</strong> of their
+            fresh readings — so no single attestor can fake it. Every number is
+            real and you can verify it yourself.
           </p>
           <div className="lp-cta">
             <a className="btn btn-primary" href="#/reserves">View live reserves →</a>
@@ -115,9 +119,12 @@ function Landing({ latest }) {
           </div>
         </div>
         <div className="lp-badge-card">
-          <div style={{ fontSize: 44 }}>{fullyBacked ? "✅" : latest ? "🚨" : "🛡️"}</div>
-          <div className="big">{latest ? `${formatRatio(latest.ratioBps)}%` : "—"}</div>
-          <div className="lbl">{fullyBacked ? "Fully backed" : latest ? "Under-backed" : "live backing ratio"}</div>
+          <div style={{ fontSize: 44 }}>{!valid ? "🛡️" : fullyBacked ? "✅" : "🚨"}</div>
+          <div className="big">{ratioBps != null ? `${formatRatio(ratioBps)}%` : "—"}</div>
+          <div className="lbl">
+            {!valid ? "live backing ratio" : fullyBacked ? "Fully backed" : "Under-backed"}
+            {health?.valid && ` · ${health.freshCount}/${health.attestorCount} attestors`}
+          </div>
         </div>
       </section>
 
@@ -136,7 +143,7 @@ function Landing({ latest }) {
 }
 
 export default function App() {
-  const { status, attestations, error } = useAttestations();
+  const { status, attestations, health, error } = useAttestations();
   const [route, setRoute] = useState(parseRoute());
   useEffect(() => {
     const onHash = () => { setRoute(parseRoute()); window.scrollTo(0, 0); };
@@ -145,7 +152,10 @@ export default function App() {
   }, []);
 
   const latest = attestations.length > 0 ? attestations[attestations.length - 1] : null;
-  const underBacked = latest !== null && latest.ratioBps < BigInt(FULL_BACKING_BPS);
+  // alert only on a valid quorum reading that is under-backed (median-based)
+  const underBacked = health
+    ? health.valid && !health.fullyBacked
+    : latest !== null && latest.ratioBps < BigInt(FULL_BACKING_BPS);
   const live = status === "ready";
 
   const states = (
@@ -163,13 +173,13 @@ export default function App() {
     <div className="page">
       <Nav live={live} route={route} />
 
-      {route === "landing" && <Landing latest={latest} />}
+      {route === "landing" && <Landing latest={latest} health={health} />}
 
       {route === "reserves" && (
         <main className="main">
           <h1 className="page-title">🛡️ Live Reserves</h1>
-          {underBacked && <AlertBanner latest={latest} />}
-          {latest ? <HeroStatus latest={latest} /> : states}
+          {underBacked && <AlertBanner latest={latest} health={health} />}
+          {latest ? <HeroStatus latest={latest} health={health} /> : states}
         </main>
       )}
 

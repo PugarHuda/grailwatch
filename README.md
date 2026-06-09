@@ -74,7 +74,31 @@ attestor and dashboard are otherwise unchanged (source-agnostic by design).
 | RPC | `https://liteforge.rpc.caldera.xyz/http` |
 | Explorer | `https://liteforge.explorer.caldera.xyz` |
 | Faucet | `https://liteforge.hub.caldera.xyz` |
-| Contract | [`0x5e6b9242Db15959EdCEccBa5C369fca3576fd598`](https://liteforge.explorer.caldera.xyz/address/0x5e6b9242Db15959EdCEccBa5C369fca3576fd598) |
+| Contract (V2 · quorum + median) | [`0x57A318E48e5dB10EF3924d0a5Ac194C77032A1C8`](https://liteforge.explorer.caldera.xyz/address/0x57A318E48e5dB10EF3924d0a5Ac194C77032A1C8) |
+| Contract (V1 · single attestor) | [`0x66DC8E77fe0E4731427fc0F1F2DE3C62270e879F`](https://liteforge.explorer.caldera.xyz/address/0x66DC8E77fe0E4731427fc0F1F2DE3C62270e879F) |
+
+## Trust model — quorum + median + freshness (V2, live)
+
+An adversarial audit of V1 found it was an *honesty-assumed logbook, not proof of
+reserves*: a single attestor (or the owner) could post any number and mint a
+permanent "FULLY BACKED" record, and `isFullyBacked()` returned the newest reading
+no matter how stale. **V2 (`ReserveAttestationV2`) fixes both:**
+
+- **Quorum + median** — health is the **median** backing ratio across *distinct*
+  attestors' most recent readings, requiring at least `quorum` of them. One liar
+  can't move the median (proven: `test "one liar can't move it"`).
+- **Freshness** — only readings newer than `maxAge` count, so a stale "fully
+  backed" can never be trusted past its deadline.
+- **Status transitions** — a `StatusChanged` event fires on every
+  Healthy↔Unhealthy↔Insufficient flip; **2-step ownership** transfer/renounce and
+  a **per-attestor rate-limit** round out the hardening.
+
+Live with **4 registered attestors** posting **real** data (LTC reserve from
+litecoinspace, zkLTC supply from Blockscout) → median **1178%**, FULLY BACKED.
+`node scripts/qa-grailwatch.js` verifies the ratio math AND cross-checks the
+on-chain numbers against the real external sources (proving they're not faked).
+**41 tests passing** (V1 26 + V2 15). Roadmap: attestor staking/slashing → SPV
+proof of the Litecoin locked-address balance for full trustlessness.
 
 ## Quickstart
 

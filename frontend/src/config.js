@@ -6,6 +6,7 @@ export const CHAIN = {
   currency: "zkLTC",
   decimals: 18,
   rpcUrl: "https://liteforge.rpc.caldera.xyz/http",
+  wsUrl: "wss://liteforge.rpc.caldera.xyz/ws",
   explorerUrl: "https://liteforge.explorer.caldera.xyz",
 };
 
@@ -20,9 +21,9 @@ function cleanAddress(raw) {
   const a = (raw || "").replace(/[^\x21-\x7e]/g, "");
   return /^0x[0-9a-fA-F]{40}$/.test(a) ? a : "";
 }
-export const ATTESTATION_ADDRESS = cleanAddress(
-  import.meta.env.VITE_ATTESTATION_ADDRESS
-);
+export const ATTESTATION_ADDRESS =
+  cleanAddress(import.meta.env.VITE_ATTESTATION_ADDRESS) ||
+  "0x57A318E48e5dB10EF3924d0a5Ac194C77032A1C8"; // ReserveAttestationV2 (quorum+median)
 
 // Dashboard polling interval (ms).
 export const REFRESH_INTERVAL = 15_000;
