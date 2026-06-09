@@ -84,8 +84,8 @@ export default function RatioChart({ attestations }) {
       >
         <defs>
           <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={allOk ? "#22c55e" : "#345D9D"} stopOpacity="0.28" />
-            <stop offset="100%" stopColor={allOk ? "#22c55e" : "#345D9D"} stopOpacity="0.02" />
+            <stop offset="0%" stopColor={allOk ? "#b9ff4d" : "#5b8def"} stopOpacity="0.55" />
+            <stop offset="100%" stopColor={allOk ? "#b9ff4d" : "#5b8def"} stopOpacity="0.08" />
           </linearGradient>
         </defs>
 
@@ -124,7 +124,7 @@ export default function RatioChart({ attestations }) {
 
         {/* area + line */}
         <path d={chart.areaPath} fill="url(#areaFill)" />
-        <path d={chart.linePath} fill="none" stroke={strokeColor} strokeWidth="2" />
+        <path d={chart.linePath} fill="none" stroke="var(--ink)" strokeWidth="3" />
 
         {/* data points */}
         {chart.points.map((p) => (
@@ -134,8 +134,8 @@ export default function RatioChart({ attestations }) {
             cy={p.py}
             r={hover && hover.a.id === p.a.id ? 5.5 : 3.5}
             fill={p.ok ? "var(--green)" : "var(--red)"}
-            stroke="#0b0e14"
-            strokeWidth="1.5"
+            stroke="var(--ink)"
+            strokeWidth="2"
           />
         ))}
 
