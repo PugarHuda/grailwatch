@@ -14,6 +14,12 @@ export default function HeroStatus({ latest }) {
   const fullyBacked = latest.ratioBps >= BigInt(FULL_BACKING_BPS);
   const ltc = ltcFromSats(latest.ltcLockedSats);
   const supply = zkLtcFromWei(latest.zkLtcSupplyWei);
+  // the attestation records its real data source in litecoinRef ("litecoinspace:<addr>")
+  const ref = latest.litecoinRef || "";
+  const ltcAddr = ref.includes(":") ? ref.split(":").pop() : ref;
+  const ltcVerifyUrl = ltcAddr.startsWith("L") || ltcAddr.startsWith("M") || ltcAddr.startsWith("ltc1")
+    ? `https://litecoinspace.org/address/${ltcAddr}`
+    : null;
 
   return (
     <section className="hero card" aria-live="polite">
@@ -33,7 +39,15 @@ export default function HeroStatus({ latest }) {
         <div className="hero-figure">
           <div className="hero-figure-value mono">{formatAmount(ltc)}</div>
           <div className="hero-figure-unit">LTC</div>
-          <div className="hero-figure-label">locked on Litecoin</div>
+          <div className="hero-figure-label">
+            {ltcVerifyUrl ? (
+              <a href={ltcVerifyUrl} target="_blank" rel="noreferrer" title={ltcAddr}>
+                real reserve · verify {shortAddress(ltcAddr)} ↗
+              </a>
+            ) : (
+              "locked on Litecoin"
+            )}
+          </div>
         </div>
         <div
           className={`hero-equals mono ${fullyBacked ? "ok-text" : "alert-text"}`}

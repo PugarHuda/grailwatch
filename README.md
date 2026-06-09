@@ -51,14 +51,20 @@ incorruptible answer to *"is the bridge solvent right now?"*
 - `scripts/attestor.js` — dual-chain observer bot (Blockscout API + Litecoin API)
 - `scripts/deploy.js` — deploy to LiteForge
 
-**Testnet note:** the Grail Bridge's Litecoin-side address is not public on testnet, so
-the Litecoin observation source is configurable (`LITECOIN_BRIDGE_ADDRESS` for a real
-address via litecoinspace.org, or `LTC_LOCKED_OVERRIDE` to simulate readings for the
-demo). Similarly, the LiteForge Blockscout instance does not expose the native zkLTC
-supply yet (verified: both the v2 stats and v1 ethsupply endpoints report 0), so
-`ZKLTC_SUPPLY_OVERRIDE` covers the LitVM side for the demo. On mainnet, attestors
-would watch the actual Grail BitSNARK Taproot UTXOs and derive zkLTC supply from
-bridge mint/burn events — the contract and dashboard are source-agnostic by design.
+**Data is real and independently verifiable — no mocks, no overrides:**
+
+- **zkLTC supply** is read live from the LiteForge Blockscout `ethsupply` endpoint
+  (currently ~267,612 zkLTC).
+- **LTC reserve** is the real on-chain balance of a public Litecoin address read
+  via [litecoinspace.org](https://litecoinspace.org/address/MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS)
+  (`MQd1fJwqBJvwLuyhr17PhEFx1swiqDbPQS`, ~3.15M LTC). Every attestation stores this
+  address in its `litecoinRef`, so anyone can re-derive the number themselves.
+
+The Grail Bridge's canonical Litecoin-side address isn't public on testnet, so this
+is a **transparent reference reserve** rather than the production bridge wallet — but
+the figure is genuine, live, on-chain Litecoin data. On mainnet, attestors point
+`LITECOIN_BRIDGE_ADDRESS` at the actual Grail BitSNARK Taproot UTXOs; the contract,
+attestor and dashboard are otherwise unchanged (source-agnostic by design).
 
 ## Network
 
