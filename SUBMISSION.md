@@ -2,43 +2,57 @@
 
 **Track:** Open Track
 
-## Discord submission message (copy-paste to #liteforge-hackathon)
+---
+
+## ✅ Discord submission message (copy-paste to #liteforge-hackathon)
+
+> **App name:** GrailWatch
+>
+> **Description:** GrailWatch is the proof-of-reserves layer for zkLTC — a quorum of independent attestors observes both Litecoin and LitVM and posts backing-ratio attestations on-chain, where health is the *median* of their fresh readings (so no single attestor can fake it) and a subscribable BackingAlert fires the moment 1 zkLTC ≠ 1 LTC, turning "trust us, it's backed" into a public, permanent, independently-verifiable audit trail.
+>
+> **Live app:** https://grailwatch-mauve.vercel.app
+>
+> **GitHub:** https://github.com/PugarHuda/grailwatch
+>
+> **Demo video:** `<X_VIDEO_LINK>`  ← *paste your X link here after recording*
+
+*(The five lines above are exactly the fields the submission form requires.)*
 
 ---
 
-**App name:** GrailWatch
+## 🎥 Demo video script (≤90 seconds) — show it live on LiteForge
 
-**Description:** GrailWatch is the proof-of-reserves layer for zkLTC — attestor bots observe both Litecoin and LitVM, post backing-ratio attestations on-chain, and fire a subscribable BackingAlert the moment 1 zkLTC ≠ 1 LTC, turning "trust us, it's backed" into a public, permanent audit trail.
-
-**Live app:** https://grailwatch-mauve.vercel.app
-
-**GitHub:** https://github.com/PugarHuda/grailwatch
-
-**Demo video:** `<X_VIDEO_LINK>`
+1. **Hook (10s):** "LitVM's whole thesis rests on one invariant: 1 zkLTC = 1 LTC. Hard money is only hard if it's *verifiable*." — open the dashboard: giant **✅ FULLY BACKED**, *median 1178% across 4 of 4 fresh attestors*.
+2. **It's real, verify it yourself (20s):** Click **"verify reserve"** → litecoinspace.org shows the real ~3.15M LTC balance; the zkLTC supply is read live from the LiteForge Blockscout API. Run `node scripts/qa-grailwatch.js` — it cross-checks the on-chain numbers against those real sources and prints **exact matches** ("not faked").
+3. **Why a quorum (25s):** Explain the audit fix on screen — a *single* attestor could once mint a permanent fake "FULLY BACKED". Now health is the **median** of distinct fresh attestors: post one liar's 5000% reading from an attestor → the median **doesn't move**, status stays honest. Show `attest()` landing on the explorer and the dashboard updating over **WebSocket**.
+4. **The alert + audit trail (25s):** Drop an under-backed reading → contract fires **BackingAlert**, dashboard flips to 🚨 UNDER-BACKED, chart dips below the 1:1 line — "any wallet, dapp or bot can subscribe." Scroll the append-only **History**: every reading timestamped, attributed, Litecoin-referenced, forever on-chain.
+5. **Close (10s):** "Proof-of-reserves became table stakes for exchanges after 2022. GrailWatch brings it to the bridge LitVM is built on. Hard money, verified — on LiteForge."
 
 ---
 
-## Demo video script (≤90 seconds)
+## 🧱 What's deployed (live + verified on LiteForge, Chain 4441)
 
-1. **Hook (10s):** "LitVM's whole thesis rests on one invariant: 1 zkLTC = 1 LTC. Hard money is only hard if it's verifiable." — show the dashboard's giant ✅ FULLY BACKED badge.
-2. **How it works (20s):** Show attestor terminal: `node scripts/attestor.js` reads the live zkLTC supply from the LiteForge Blockscout API + the Litecoin-side observation → posts `attest()` → tx confirms on explorer → dashboard refreshes with the new data point.
-3. **The alert (30s):** Post an under-backed observation (demo override) → contract fires **BackingAlert** → dashboard flips to 🚨 UNDER-BACKED with red pulsing banner, chart point drops below the 1:1 reference line. "Any wallet, dapp, or bot on LitVM can subscribe to this event."
-4. **The audit trail (20s):** Scroll the attestation log — every reading timestamped, attributed, referenced to a Litecoin block, forever on-chain. Show the history chart.
-5. **Close (10s):** "Proof-of-reserves became table stakes for exchanges after 2022. GrailWatch brings it to the bridge LitVM is built on. Hard money, verified."
+| Contract | Address |
+|---|---|
+| ReserveAttestationV3 (hardened quorum + median + freshness) | `0xf099F039f8206C4C2BF91120A913a1F138fBAfcB` |
 
-## Judging criteria mapping
+- **Trust model:** median across ≥`quorum` *distinct fresh* attestors; `maxAge` staleness; 3-state status; per-attestor rate-limit; 2-step ownership; attestor-set cap (anti-DoS).
+- **Data is real:** LTC reserve = live balance of a public Litecoin address (litecoinspace.org); zkLTC supply = live LiteForge Blockscout `ethsupply`. Serverless Vercel **cron** keeps the feed fresh.
+- **63 unit tests passing** (V1 26 + V2 15 + V3 22); `scripts/qa-grailwatch.js` proves the on-chain numbers match the real external sources.
 
-- **Innovation:** first proof-of-reserves / bridge-transparency infrastructure in the LitVM ecosystem; alert events other dapps can build on.
-- **Hard Money Web3 alignment:** directly verifies the core "1 zkLTC = 1 LTC" hard-money invariant the entire ecosystem depends on — public-good infrastructure for every other LitVM project.
-- **Technical quality:** 9/9 unit tests, BigInt-exact bps ratio math, attestor registry, paginated on-chain history, dual-chain observer bot.
-- **UX:** zero-wallet public status page, 15s auto-refresh, instant-read status badge, hand-rolled SVG history chart.
+## 🏆 Judging-criteria mapping
 
-## Pre-submission checklist
+- **Innovation:** first proof-of-reserves / bridge-transparency infrastructure for LitVM; quorum-median design + alert events other dapps can build on.
+- **Hard Money Web3 alignment:** verifies the exact "1 zkLTC = 1 LTC" hard-money invariant the *entire* ecosystem depends on — public-good infrastructure for every other LitVM project.
+- **Technical quality:** BigInt-exact bps math, median-of-fresh-attestors with freshness gating, hardened across **2 adversarial audit rounds** (single-attestor-trust → quorum/median; then anti-DoS cap + honest 3-state status + freshness guard), real-data cross-check, WebSocket live updates.
+- **UX:** zero-wallet public status page, instant-read backing badge, "median across N of M fresh attestors", one-click independent verification, live history chart.
 
-- [ ] Contract deployed to LiteForge, address in README + frontend/.env (`VITE_ATTESTATION_ADDRESS`)
-- [ ] ≥5 attestations posted on-chain (incl. one under-backed for the alert demo, then restored)
-- [ ] Frontend hosted (Vercel/Netlify) — live link works in incognito
-- [ ] README updated with deployed address + live link + video link
-- [ ] Repo pushed to GitHub (public)
-- [ ] Demo video posted on X, shows the app live on LiteForge
-- [ ] Submitted in #liteforge-hackathon before **June 10, 2026**
+## ☑️ Pre-submission checklist
+
+- [x] Contract deployed + **verified** on LiteForge (V3)
+- [x] 4 real attestors seeded; multiple attestations on-chain (incl. live cron tx)
+- [x] Frontend hosted on Vercel — live link works in incognito
+- [x] README has deployed address + live link + trust model
+- [x] Repo public on GitHub, fully pushed
+- [ ] **Demo video posted on X** showing the app live on LiteForge ← *only remaining step (human)*
+- [ ] **Submit in #liteforge-hackathon before June 10, 2026** (paste the message above with your X link)
