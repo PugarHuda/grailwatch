@@ -23,7 +23,7 @@ function cleanAddress(raw) {
 }
 export const ATTESTATION_ADDRESS =
   cleanAddress(import.meta.env.VITE_ATTESTATION_ADDRESS) ||
-  "0x57A318E48e5dB10EF3924d0a5Ac194C77032A1C8"; // ReserveAttestationV2 (quorum+median)
+  "0xf099F039f8206C4C2BF91120A913a1F138fBAfcB"; // ReserveAttestationV3 (hardened quorum+median+freshness)
 
 // Dashboard polling interval (ms).
 export const REFRESH_INTERVAL = 15_000;

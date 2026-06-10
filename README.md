@@ -74,15 +74,17 @@ attestor and dashboard are otherwise unchanged (source-agnostic by design).
 | RPC | `https://liteforge.rpc.caldera.xyz/http` |
 | Explorer | `https://liteforge.explorer.caldera.xyz` |
 | Faucet | `https://liteforge.hub.caldera.xyz` |
+| Contract (V3 · hardened, **live**) | [`0xf099F039f8206C4C2BF91120A913a1F138fBAfcB`](https://liteforge.explorer.caldera.xyz/address/0xf099F039f8206C4C2BF91120A913a1F138fBAfcB) |
 | Contract (V2 · quorum + median) | [`0x57A318E48e5dB10EF3924d0a5Ac194C77032A1C8`](https://liteforge.explorer.caldera.xyz/address/0x57A318E48e5dB10EF3924d0a5Ac194C77032A1C8) |
 | Contract (V1 · single attestor) | [`0x66DC8E77fe0E4731427fc0F1F2DE3C62270e879F`](https://liteforge.explorer.caldera.xyz/address/0x66DC8E77fe0E4731427fc0F1F2DE3C62270e879F) |
 
-## Trust model — quorum + median + freshness (V2, live)
+## Trust model — quorum + median + freshness, hardened (V3, live)
 
 An adversarial audit of V1 found it was an *honesty-assumed logbook, not proof of
 reserves*: a single attestor (or the owner) could post any number and mint a
 permanent "FULLY BACKED" record, and `isFullyBacked()` returned the newest reading
-no matter how stale. **V2 (`ReserveAttestationV2`) fixes both:**
+no matter how stale. **V2 fixed the core trust gap; a second audit of V2 found
+three robustness gaps, closed in V3 (`ReserveAttestationV3`, live):**
 
 - **Quorum + median** — health is the **median** backing ratio across *distinct*
   attestors' most recent readings, requiring at least `quorum` of them. One liar
@@ -90,15 +92,27 @@ no matter how stale. **V2 (`ReserveAttestationV2`) fixes both:**
 - **Freshness** — only readings newer than `maxAge` count, so a stale "fully
   backed" can never be trusted past its deadline.
 - **Status transitions** — a `StatusChanged` event fires on every
-  Healthy↔Unhealthy↔Insufficient flip; **2-step ownership** transfer/renounce and
-  a **per-attestor rate-limit** round out the hardening.
+  Healthy↔Unhealthy↔Unknown flip; **2-step ownership** transfer/renounce and
+  a **per-attestor rate-limit** round out the design.
+- **V3 hardening:** (1) the attestor set is **hard-capped** (`MAX_ATTESTORS`) so
+  the `health()` scan/sort that runs inside every `attest()` can never exceed the
+  block gas limit and brick attestation (the V2 audit's top finding); (2) a
+  **3-state status** (`Unknown`/`Healthy`/`Unhealthy`) so the persisted status
+  never reports "healthy" before a quorum has ever existed; (3) the constructor
+  enforces **`minInterval < maxAge`** so the rate-limit can't starve an attestor
+  into staleness.
+
+**Disclosed limitation:** the attestor set is owner-curated, so the median
+protects against a rogue attestor *among honest peers*, not against a malicious
+owner registering colluding addresses. Full trustlessness (permissionless
+attestor staking/slashing + SPV proof of the Litecoin locked balance) is the
+roadmap.
 
 Live with **4 registered attestors** posting **real** data (LTC reserve from
 litecoinspace, zkLTC supply from Blockscout) → median **1178%**, FULLY BACKED.
 `node scripts/qa-grailwatch.js` verifies the ratio math AND cross-checks the
 on-chain numbers against the real external sources (proving they're not faked).
-**41 tests passing** (V1 26 + V2 15). Roadmap: attestor staking/slashing → SPV
-proof of the Litecoin locked-address balance for full trustlessness.
+**63 tests passing** (V1 26 + V2 15 + V3 22).
 
 ## Quickstart
 
