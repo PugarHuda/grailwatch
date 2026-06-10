@@ -118,7 +118,7 @@ on-chain numbers against the real external sources (proving they're not faked).
 
 ```bash
 npm install
-npm test                                  # 9 passing unit tests
+npm test                                  # 63 passing unit tests (V1 26 + V2 15 + V3 22)
 
 cp .env.example .env                      # fill in keys
 npm run deploy                            # deploy ReserveAttestation to LiteForge
