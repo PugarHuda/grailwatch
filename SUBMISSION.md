@@ -36,7 +36,7 @@
 
 > 🛡️ Is zkLTC really backed 1:1 by LTC? Don't trust — verify.
 >
-> GrailWatch is proof-of-reserves for @LitVM. A quorum of independent attestors posts the backing ratio on-chain; health = the MEDIAN of fresh readings, so no single attestor can fake it. A BackingAlert fires the instant 1 zkLTC ≠ 1 LTC.
+> GrailWatch is proof-of-reserves for @LitecoinVM. A quorum of independent attestors posts the backing ratio on-chain; health = the MEDIAN of fresh readings, so no single attestor can fake it. A BackingAlert fires the instant 1 zkLTC ≠ 1 LTC.
 >
 > Live 👇 #LiteForge #Litecoin #zkLTC
 > https://grailwatch-mauve.vercel.app
@@ -48,10 +48,10 @@
 > 3/ The hardening: a single attestor could once mint a permanent fake "FULLY BACKED". Now one liar's reading can't move the median. Plus freshness gating, a 3-state status, and an attestor-set cap so attestation can never be gas-bricked. 63 tests, 2 adversarial audit rounds.
 
 > 4/ Proof-of-reserves became table stakes for exchanges after 2022. GrailWatch brings it to the bridge LitVM itself is built on — public-good infrastructure every LitVM dapp can subscribe to.
-> #LiteForge Hackathon w/ @LitVM × @Dappit 🚀
+> #LiteForge Hackathon w/ @LitecoinVM × @Dappit 🚀
 > Code: https://github.com/PugarHuda/grailwatch
 
-*Tag the official @LitVM and @Dappit handles (and @Litecoin) so the judges see it.*
+*Tag the official @LitecoinVM and @Dappit handles (and @Litecoin) so the judges see it.*
 
 ---
 
