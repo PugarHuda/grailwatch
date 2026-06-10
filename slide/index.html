@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<!-- GrailWatch pitch deck. Present fullscreen (F11). Export to PDF: open in Chrome -> Print -> Save as PDF (Landscape). -->
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GrailWatch — Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0b0b0b;
+    --paper:#f4efe1;
+    --paper2:#ece5d2;
+    --white:#ffffff;
+    --lime:#b9ff4d;   /* GrailWatch accent */
+    --blue:#5b8def;
+    --pink:#ff90c8;
+    --yellow:#ffd93d;
+    --red:#ff5d4d;
+    --display:"Archivo Black","Arial Black",system-ui,sans-serif;
+    --sans:"Space Grotesk","Arial",system-ui,sans-serif;
+    --mono:"Space Mono",ui-monospace,Consolas,monospace;
+    --bd:5px solid var(--ink);
+    --bd3:3px solid var(--ink);
+    --sh:10px 10px 0 var(--ink);
+    --sh-sm:6px 6px 0 var(--ink);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--ink);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-weight:500;
+    overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  #stage{
+    position:fixed;inset:0;
+    display:grid;place-items:center;
+    background:#1a1a1a;
+    background-image:radial-gradient(#333 1.2px,transparent 1.2px);
+    background-size:26px 26px;
+  }
+  #deck{
+    position:relative;
+    width:100vw;height:56.25vw;
+    max-height:100vh;max-width:177.78vh;
+    background:var(--paper);
+    background-image:radial-gradient(rgba(11,11,11,.15) 1.2px,transparent 1.2px);
+    background-size:26px 26px;
+    overflow:hidden;
+    box-shadow:0 0 0 4px var(--ink), 24px 24px 0 rgba(0,0,0,.45);
+  }
+
+  .slide{
+    position:absolute;inset:0;
+    padding:5.5% 6.5%;
+    display:none;
+    flex-direction:column;
+    opacity:0;
+    transition:opacity .28s ease;
+  }
+  .slide.active{display:flex;opacity:1;animation:pop .34s ease;}
+  @keyframes pop{from{transform:translateY(14px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .slide{font-size:clamp(11px,1.45vw,26px);}
+
+  .kicker{
+    display:inline-flex;align-items:center;gap:.5em;
+    font-family:var(--mono);font-weight:700;
+    font-size:.72em;text-transform:uppercase;letter-spacing:.12em;
+    background:var(--ink);color:var(--paper);
+    padding:.4em .8em;align-self:flex-start;
+  }
+  .tag{
+    display:inline-block;font-family:var(--mono);font-weight:700;
+    font-size:.66em;text-transform:uppercase;letter-spacing:.08em;
+    border:var(--bd3);padding:.35em .7em;background:var(--white);
+    box-shadow:4px 4px 0 var(--ink);
+  }
+  h1{font-family:var(--display);line-height:.92;letter-spacing:-.01em;}
+  h2{font-family:var(--display);line-height:.96;letter-spacing:-.01em;}
+  .lead{font-size:1.5em;font-weight:600;line-height:1.25;}
+  .mono{font-family:var(--mono);}
+  .underline{
+    background:linear-gradient(transparent 62%, var(--lime) 62%);
+    padding:0 .05em;
+  }
+
+  .card{
+    background:var(--white);border:var(--bd);box-shadow:var(--sh);
+    padding:1.1em 1.2em;
+  }
+  .card h3{font-family:var(--display);font-size:1.05em;margin-bottom:.35em;line-height:1;}
+  .card p{font-size:.92em;line-height:1.32;}
+
+  .slide-head{display:flex;align-items:center;gap:1em;margin-bottom:.7em;}
+  .slide-head .idx{
+    font-family:var(--display);font-size:1.1em;
+    background:var(--lime);border:var(--bd);box-shadow:var(--sh-sm);
+    padding:.15em .5em;
+  }
+  .slide-title{font-family:var(--display);font-size:2.1em;line-height:.95;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.1em;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1em;}
+  .grow{flex:1;min-height:0;}
+
+  ul.brutal{list-style:none;display:flex;flex-direction:column;gap:.55em;}
+  ul.brutal li{display:flex;gap:.6em;align-items:flex-start;font-size:1.02em;line-height:1.3;}
+  ul.brutal li::before{
+    content:"";flex:0 0 auto;margin-top:.18em;
+    width:.85em;height:.85em;background:var(--lime);border:3px solid var(--ink);
+  }
+
+  /* flow diagram */
+  .flow{display:flex;align-items:stretch;gap:.5em;flex-wrap:nowrap;}
+  .step{
+    flex:1;background:var(--white);border:var(--bd3);box-shadow:4px 4px 0 var(--ink);
+    padding:.7em .65em;display:flex;flex-direction:column;gap:.25em;min-width:0;
+  }
+  .step .s-n{font-family:var(--mono);font-weight:700;font-size:.7em;background:var(--ink);color:var(--paper);align-self:flex-start;padding:.1em .45em;}
+  .step b{font-family:var(--display);font-size:.9em;line-height:1;}
+  .step span{font-size:.78em;line-height:1.22;}
+  .arrow{align-self:center;font-family:var(--display);font-size:1.4em;color:var(--ink);}
+  .branch{display:grid;grid-template-columns:repeat(2,1fr);gap:.55em;margin-top:.7em;}
+  .branch .step{flex:none;}
+  .b-good{background:var(--lime);}
+  .b-alert{background:var(--pink);}
+
+  .stat{background:var(--ink);color:var(--paper);border:var(--bd);box-shadow:var(--sh);padding:1em 1.1em;display:flex;flex-direction:column;gap:.1em;}
+  .stat .big{font-family:var(--display);font-size:2.2em;line-height:1;color:var(--lime);}
+  .stat .lbl{font-family:var(--mono);font-size:.72em;text-transform:uppercase;letter-spacing:.08em;}
+
+  .addr{font-family:var(--mono);font-size:.8em;word-break:break-all;background:var(--paper2);border:var(--bd3);padding:.45em .6em;}
+  .verified{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.7em;background:var(--lime);border:3px solid var(--ink);padding:.1em .45em;margin-left:.3em;}
+
+  .crit{display:grid;grid-template-columns:auto 1fr;gap:.6em 1em;align-items:center;}
+  .crit .c-k{font-family:var(--display);font-size:1em;background:var(--lime);border:var(--bd3);box-shadow:4px 4px 0 var(--ink);padding:.4em .7em;text-align:center;}
+  .crit .c-v{font-size:1.02em;line-height:1.25;}
+
+  .road{display:grid;grid-template-columns:1fr 1fr;gap:1em;}
+  .road .col h3{font-family:var(--display);font-size:1.1em;margin-bottom:.4em;}
+
+  /* backing badge motif */
+  .badge{
+    display:inline-flex;align-items:center;gap:.5em;
+    font-family:var(--display);font-size:1.1em;
+    background:var(--lime);border:var(--bd);box-shadow:var(--sh-sm);
+    padding:.4em .8em;
+  }
+  .badge .ratio{font-family:var(--mono);}
+
+  #bar{position:absolute;left:0;bottom:0;height:9px;background:var(--lime);border-top:3px solid var(--ink);transition:width .3s ease;z-index:5;}
+  #counter{
+    position:absolute;right:1.4%;bottom:2.4%;z-index:6;
+    font-family:var(--mono);font-weight:700;font-size:clamp(10px,1.05vw,18px);
+    background:var(--ink);color:var(--paper);padding:.25em .6em;border:3px solid var(--lime);
+  }
+  #brandtag{
+    position:absolute;left:1.6%;bottom:2.4%;z-index:6;
+    font-family:var(--display);font-size:clamp(10px,1.05vw,18px);
+  }
+  #brandtag .dot{display:inline-block;width:.7em;height:.7em;background:var(--lime);border:2px solid var(--ink);margin-right:.35em;}
+  #hint{
+    position:absolute;left:50%;top:1.2%;transform:translateX(-50%);z-index:6;
+    font-family:var(--mono);font-size:clamp(9px,.9vw,14px);opacity:.5;
+    background:var(--paper);padding:.15em .5em;border:2px solid var(--ink);
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="deck">
+
+    <!-- 1 TITLE -->
+    <section class="slide active">
+      <div class="kicker">● Open Track</div>
+      <div class="grow" style="display:flex;flex-direction:column;justify-content:center;">
+        <div class="tag" style="background:var(--lime);">GRAILWATCH</div>
+        <h1 style="font-size:6.4em;margin:.12em 0 .12em;">Grail<span style="color:var(--lime);-webkit-text-stroke:3px var(--ink);">Watch</span></h1>
+        <p class="lead" style="font-size:2em;max-width:18em;">Proof-of-reserves for <span class="underline">zkLTC.</span></p>
+      </div>
+      <div style="display:flex;gap:1em;align-items:center;flex-wrap:wrap;">
+        <span class="tag" style="background:var(--lime);">LIVE ON LITVM LITEFORGE · CHAIN 4441</span>
+        <span class="mono" style="font-weight:700;font-size:1.1em;">grailwatch-mauve.vercel.app</span>
+      </div>
+    </section>
+
+    <!-- 2 PROBLEM -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">01</span><span class="slide-title">The Problem</span></div>
+      <p class="lead" style="margin-bottom:.7em;">LitVM's entire thesis rests on one invariant — <span class="badge" style="font-size:.85em;">1 zkLTC = 1 LTC</span></p>
+      <div class="grid2 grow" style="align-content:center;">
+        <div class="card" style="background:var(--pink);box-shadow:10px 10px 0 var(--ink);">
+          <h3>Today it's "trust us"</h3>
+          <p>That 1:1 backing is asserted, not proven. There's no live, public, independently verifiable check anyone can run right now.</p>
+        </div>
+        <div class="card">
+          <h3>PoR is table stakes</h3>
+          <p>After the 2022 collapses, proof-of-reserves became mandatory for exchanges. The bridge LitVM is built on needs exactly the same accountability.</p>
+        </div>
+      </div>
+      <p class="lead" style="font-size:1.2em;margin-top:.6em;">If the peg ever breaks, everyone should find out instantly — not eventually.</p>
+    </section>
+
+    <!-- 3 SOLUTION -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">02</span><span class="slide-title">The Solution</span></div>
+      <p class="lead" style="margin-bottom:.6em;">A <span class="underline">quorum of independent attestors</span> observes both chains and posts the backing ratio on-chain.</p>
+      <ul class="brutal grow" style="justify-content:center;">
+        <li><b>Median, not trust.</b>&nbsp;Health is the <i>median</i> of fresh readings, so no single attestor — or liar — can fake "FULLY BACKED".</li>
+        <li><b>Instant alerts.</b>&nbsp;A subscribable <span class="mono">BackingAlert</span> fires the moment backing drops below 1:1.</li>
+        <li><b>Real, verifiable numbers.</b>&nbsp;Every figure traces back to a public source anyone can re-check.</li>
+        <li><b>Public good.</b>&nbsp;Zero-wallet status page that every LitVM dApp benefits from.</li>
+      </ul>
+    </section>
+
+    <!-- 4 HOW IT WORKS -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">03</span><span class="slide-title">How It Works</span></div>
+      <div class="flow">
+        <div class="step" style="background:var(--lime);"><span class="s-n">1 · read</span><b>Observe both chains</b><span>Real LTC reserve (public Litecoin address via litecoinspace.org) + real live zkLTC supply (LiteForge Blockscout).</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="s-n">2</span><b>attest()</b><span>Each attestor posts its reading on-chain.</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="s-n">3</span><b>health()</b><span>Returns the MEDIAN across distinct, fresh attestors — must be ≥ quorum and newer than maxAge.</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><span class="s-n">4</span><b>events</b><span>StatusChanged / BackingAlert emitted.</span></div>
+      </div>
+      <div class="branch">
+        <div class="step b-good"><span class="s-n">consume</span><b>Public dashboard + subscribe</b><span>Anyone reads the live backing badge or subscribes to alerts. WebSocket pushes updates in real time.</span></div>
+        <div class="step b-alert"><span class="s-n">fresh</span><b>Serverless cron</b><span>Keeps the feed fresh so the median always reflects current, unstale readings.</span></div>
+      </div>
+    </section>
+
+    <!-- 5 LIVE & ON-CHAIN -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">04</span><span class="slide-title">Live &amp; On-Chain</span></div>
+      <div class="grid2 grow">
+        <div style="display:flex;flex-direction:column;gap:.8em;justify-content:center;">
+          <div>
+            <div class="mono" style="font-weight:700;font-size:.8em;text-transform:uppercase;letter-spacing:.1em;">Live dashboard</div>
+            <div class="lead" style="font-size:1.3em;">grailwatch-mauve.vercel.app</div>
+          </div>
+          <div class="tag" style="background:var(--lime);font-size:.9em;">● REAL DATA — NO MOCKS</div>
+          <p style="font-size:1em;line-height:1.35;"><b>qa-grailwatch.js</b> cross-checks the on-chain numbers against the real external sources — an <b>exact match</b>, proving nothing is fabricated.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.8em;justify-content:center;">
+          <div>
+            <div class="mono" style="font-weight:700;font-size:.8em;">ReserveAttestationV3 <span class="verified">VERIFIED</span></div>
+            <div class="addr">0xf099F039f8206C4C2BF91120A913a1F138fBAfcB</div>
+          </div>
+          <div class="grid3" style="gap:.5em;">
+            <div class="tag" style="font-size:.6em;">QUORUM 2</div>
+            <div class="tag" style="font-size:.6em;">maxAge 172800s</div>
+            <div class="tag" style="font-size:.6em;">minInterval 30s</div>
+          </div>
+          <div class="tag">CHAIN 4441 · LITVM LITEFORGE</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 UNDER THE HOOD -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">05</span><span class="slide-title">Under the Hood</span></div>
+      <div class="grid3" style="margin-bottom:1em;">
+        <div class="stat"><span class="big">63</span><span class="lbl">passing tests</span></div>
+        <div class="stat"><span class="big">2</span><span class="lbl">adversarial audit rounds</span></div>
+        <div class="stat"><span class="big">V3</span><span class="lbl">hardened contract</span></div>
+      </div>
+      <div class="grid2 grow">
+        <div class="card">
+          <h3>Evolution V1 → V3</h3>
+          <p><b>V1</b> single-attestor trust → <b>V2</b> quorum + median + freshness → <b>V3</b> anti-DoS attestor cap, honest 3-state status, and a <span class="mono">minInterval &lt; maxAge</span> guard.</p>
+        </div>
+        <div class="card" style="background:var(--lime);">
+          <h3>Proof, not promises</h3>
+          <p>Quorum-median-freshness on-chain, real-data cross-check in QA, WebSocket live updates, neobrutalism React UI. 63 tests across 2 audit rounds.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 HARD MONEY FIT -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">06</span><span class="slide-title">Why It's Hard Money Web3</span></div>
+      <div class="grow" style="display:flex;flex-direction:column;justify-content:center;gap:1em;">
+        <p class="lead">GrailWatch directly verifies the <span class="underline">"1 zkLTC = 1 LTC"</span> hard-money invariant the whole ecosystem depends on.</p>
+        <div class="grid2">
+          <div class="card"><h3>Guards the peg</h3><p>The hard-money promise of LitVM is only as good as its backing. GrailWatch makes that backing continuously, publicly provable.</p></div>
+          <div class="card" style="background:var(--lime);"><h3>Public-good infra</h3><p>Not a single dApp — shared transparency infrastructure that every LitVM application can rely on and link to.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 JUDGING -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">07</span><span class="slide-title">Judging Criteria</span></div>
+      <div class="crit grow" style="align-content:center;">
+        <div class="c-k">Innovation</div>
+        <div class="c-v">First proof-of-reserves / bridge-transparency infrastructure for LitVM.</div>
+        <div class="c-k">Hard Money</div>
+        <div class="c-v">Verifies the core hard-money invariant the entire ecosystem rests on.</div>
+        <div class="c-k">Technical</div>
+        <div class="c-v">Quorum-median-freshness, 2 audit rounds, real-data cross-check, 63 tests.</div>
+        <div class="c-k">UX</div>
+        <div class="c-v">Zero-wallet public status page, instant backing badge, one-click independent verification.</div>
+      </div>
+    </section>
+
+    <!-- 9 NOW + ROADMAP -->
+    <section class="slide">
+      <div class="slide-head"><span class="idx">08</span><span class="slide-title">Live Now + Roadmap</span></div>
+      <div class="road grow" style="align-content:center;">
+        <div class="col card" style="background:var(--lime);">
+          <h3>● Live now</h3>
+          <ul class="brutal" style="font-size:.9em;">
+            <li>V3 contract on Chain 4441 (verified)</li>
+            <li>Quorum-median backing health from real LTC + zkLTC data</li>
+            <li>BackingAlert events + subscribable public dashboard</li>
+            <li>QA cross-check proving exact match vs external sources</li>
+          </ul>
+        </div>
+        <div class="col card">
+          <h3>→ Roadmap <span style="font-family:var(--sans);font-weight:700;font-size:.6em;">(disclosed limitation)</span></h3>
+          <p style="font-size:.86em;line-height:1.3;margin-bottom:.5em;">The attestor set is <b>owner-curated</b> today — the median protects against a rogue attestor among honest peers, not a malicious owner.</p>
+          <ul class="brutal" style="font-size:.88em;">
+            <li>Permissionless attestor <b>staking + slashing</b></li>
+            <li>SPV proof of the Litecoin locked balance → full trustlessness</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 CLOSE -->
+    <section class="slide">
+      <div class="grow" style="display:flex;flex-direction:column;justify-content:center;">
+        <div class="tag" style="background:var(--lime);align-self:flex-start;">GRAILWATCH</div>
+        <h2 style="font-size:5em;margin:.1em 0;">Proof-of-reserves<br/>for zkLTC.</h2>
+        <div style="display:flex;flex-direction:column;gap:.3em;margin-top:.6em;font-family:var(--mono);font-weight:700;font-size:1.15em;">
+          <div><span class="verified">LIVE</span>&nbsp; grailwatch-mauve.vercel.app</div>
+          <div><span class="tag" style="font-size:.85em;">GITHUB</span>&nbsp; github.com/PugarHuda/grailwatch</div>
+        </div>
+      </div>
+      <div class="tag" style="background:var(--lime);align-self:flex-start;">BUILT FOR THE LITEFORGE HACKATHON 2026</div>
+    </section>
+
+    <div id="hint">← →  ·  Space  ·  click sides</div>
+    <div id="brandtag"><span class="dot"></span>GRAILWATCH</div>
+    <div id="counter">1 / 10</div>
+    <div id="bar"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var bar = document.getElementById('bar');
+  var counter = document.getElementById('counter');
+  var i = 0;
+  function show(n){
+    if(n<0) n=0;
+    if(n>slides.length-1) n=slides.length-1;
+    slides[i].classList.remove('active');
+    i = n;
+    slides[i].classList.add('active');
+    counter.textContent = (i+1)+' / '+slides.length;
+    bar.style.width = (((i+1)/slides.length)*100)+'%';
+  }
+  function next(){ show(i+1); }
+  function prev(){ show(i-1); }
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){ e.preventDefault(); next(); }
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ e.preventDefault(); show(0); }
+    else if(e.key==='End'){ e.preventDefault(); show(slides.length-1); }
+  });
+
+  document.getElementById('deck').addEventListener('click', function(e){
+    if(e.target.closest('a')) return;
+    var rect = this.getBoundingClientRect();
+    if((e.clientX - rect.left) < rect.width*0.5){ prev(); } else { next(); }
+  });
+
+  show(0);
+})();
+</script>
+</body>
+</html>

@@ -131,4 +131,5 @@ node scripts/attestor.js 60               # attest every 60s
 🌐 Live dashboard: **https://grailwatch-mauve.vercel.app**
 📦 GitHub: **https://github.com/PugarHuda/grailwatch**
 🎥 Demo video (X): `<X_VIDEO_LINK>`
-📹 Rendered demo (in-repo, ~61s w/ voiceover): [`demo/GrailWatch-demo.mp4`](demo/GrailWatch-demo.mp4) — auto-generated from real live capture; see [`demo/README.md`](demo/README.md)
+📹 Rendered demo (in-repo, ~76s w/ voiceover + live verification shot): [`demo/GrailWatch-demo.mp4`](demo/GrailWatch-demo.mp4) — auto-generated from real interactive capture; see [`demo/README.md`](demo/README.md)
+🖥️ Pitch deck (10 slides, open in a browser, arrow keys): [`slide/index.html`](slide/index.html)
